@@ -9,34 +9,6 @@ A comprehensive **Spring Boot** application that provides real-time COVID-19 ana
 
 ---
 
-## 📸 Application Screenshots
-
-**Dashboard Overview**
-
-![Dashboard Overview](images/Dashboard%201.png)
-
-**Interactive Charts and Filters**
-
-![Charts and Filters](images/Dashboard%202.png)
-
-**Pie and Donut Charts**
-
-![Pie and Donut Charts](images/Dashboard%203.png)
-
-**Cases Overview and Demographics**
-
-![Cases Overview and Demographics](images/Dashboard%204.png)
-
-**Detailed Metrics and Trends**
-
-![Detailed Metrics and Trends](images/Dashboard%205.png)
-
-**Export and Analysis Features**
-
-![Export and Analysis Features](images/Dashboard%206.png)
-
----
-
 ## 📊 Features
 
 ### 🎯 Core Functionality
@@ -83,6 +55,22 @@ Before running this application, ensure you have the following installed:
 - **Maven**: Version 3.2 or later
 - **IDE**: IntelliJ IDEA, Eclipse, or VS Code (recommended)
 - **Git**: For cloning the repository
+
+---
+
+## 📸 Application Screenshots
+
+**Dashboard Overview**
+
+![Dashboard Overview](images/Dashboard%201.png)
+![Charts and Filters](images/Dashboard%202.png)
+![Pie and Donut Charts](images/Dashboard%203.png)
+![Cases Overview and Demographics](images/Dashboard%204.png)
+![Detailed Metrics and Trends](images/Dashboard%205.png)
+![Export and Analysis Features](images/Dashboard%206.png)
+
+---
+
 
 ## 🚀 Quick Start
 
