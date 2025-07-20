@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal Fixes Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .test-button { margin: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Modal Fixes Test</h1>
+        
+        <div class="test-section">
+            <h3>Test 1: Basic Modal Functionality</h3>
+            <button class="btn btn-primary test-button" onclick="showTestModal()">Show Test Modal</button>
+            <button class="btn btn-success test-button" onclick="showDataModal('Test Data', [{name: 'Test', value: 100}], 'test')">Show Data Modal</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test 2: Modal Cleanup</h3>
+            <button class="btn btn-warning test-button" onclick="checkAndFixModalState()">Check & Fix Modal State</button>
+            <button class="btn btn-danger test-button" onclick="cleanupModal()">Force Cleanup</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test 3: Dashboard Interaction</h3>
+            <p>After closing a modal, you should be able to interact with these elements:</p>
+            <button class="btn btn-info test-button" onclick="alert('Button clicked!')">Test Button</button>
+            <input type="text" class="form-control" placeholder="Test input field" style="width: 200px; display: inline-block;">
+            <select class="form-select" style="width: 200px; display: inline-block;">
+                <option>Test dropdown</option>
+            </select>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test 4: Simulate Chart Click</h3>
+            <button class="btn btn-secondary test-button" onclick="simulateChartClick()">Simulate Chart Click (Opens Modal)</button>
+        </div>
+        
+        <div class="alert alert-info">
+            <strong>Instructions:</strong>
+            <ol>
+                <li>Click "Show Test Modal" or "Show Data Modal" to open a modal</li>
+                <li>Close the modal using the X button or Close button</li>
+                <li>Try to interact with the test elements above</li>
+                <li>If interaction is blocked, click "Check & Fix Modal State"</li>
+                <li>If still blocked, click "Force Cleanup"</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Modal for testing -->
+    <div class="modal fade" id="dataModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Test Modal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="cleanupModal()"></button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <p>This is a test modal to verify cleanup functionality.</p>
+                    <p>After closing this modal, you should be able to interact with all dashboard elements.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="cleanupModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Clean up modal state and remove backdrop
+        function cleanupModal() {
+            console.log('Cleaning up modal state...');
+            
+            // Remove modal-open class from body
+            document.body.classList.remove('modal-open');
+            
+            // Remove any forced backdrop
+            var forcedBackdrop = document.getElementById('forcedModalBackdrop');
+            if (forcedBackdrop) {
+                forcedBackdrop.remove();
+                console.log('Removed forced backdrop');
+            }
+            
+            // Remove all modal backdrops
+            var allBackdrops = document.querySelectorAll('.modal-backdrop');
+            allBackdrops.forEach(function(backdrop) {
+                backdrop.remove();
+                console.log('Removed modal backdrop');
+            });
+            
+            // Ensure modal is properly hidden
+            var modalElement = document.getElementById('dataModal');
+            if (modalElement) {
+                modalElement.style.display = 'none';
+                modalElement.classList.remove('show');
+                console.log('Modal properly hidden');
+            }
+            
+            // Re-enable pointer events on body
+            document.body.style.pointerEvents = 'auto';
+            
+            console.log('Modal cleanup completed');
+        }
+
+        // Function to check and fix modal state issues
+        function checkAndFixModalState() {
+            console.log('Checking modal state...');
+            
+            // Check if body has modal-open class but no modal is visible
+            if (document.body.classList.contains('modal-open')) {
+                var modalElement = document.getElementById('dataModal');
+                if (!modalElement || !modalElement.classList.contains('show')) {
+                    console.log('Found orphaned modal-open class, cleaning up...');
+                    cleanupModal();
+                }
+            }
+            
+            // Check for orphaned backdrops
+            var backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 0) {
+                var modalElement = document.getElementById('dataModal');
+                if (!modalElement || !modalElement.classList.contains('show')) {
+                    console.log('Found orphaned backdrops, cleaning up...');
+                    cleanupModal();
+                }
+            }
+            
+            // Check if pointer events are disabled
+            if (document.body.style.pointerEvents === 'none') {
+                console.log('Found disabled pointer events, re-enabling...');
+                document.body.style.pointerEvents = 'auto';
+            }
+            
+            console.log('Modal state check completed');
+        }
+
+        // Show test modal
+        function showTestModal() {
+            var modalElement = document.getElementById('dataModal');
+            var modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+
+        // Show data modal (simplified version)
+        function showDataModal(title, data, type) {
+            console.log('Showing data modal:', title, data, type);
+            
+            // Update modal title
+            document.getElementById('modalTitle').textContent = title;
+            
+            // Update modal content
+            var modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h6>Data Type: ${type}</h6>
+                <p>Data: ${JSON.stringify(data)}</p>
+                <p>This modal should close properly and allow dashboard interaction.</p>
+            `;
+            
+            // Show modal
+            var modalElement = document.getElementById('dataModal');
+            var modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+
+        // Simulate chart click
+        function simulateChartClick() {
+            showDataModal('Chart Data', [
+                {country: 'Test Country', cases: 1000, deaths: 50, recoveries: 800},
+                {country: 'Another Country', cases: 2000, deaths: 100, recoveries: 1800}
+            ], 'chart');
+        }
+
+        // Add global modal cleanup listener
+        document.addEventListener('DOMContentLoaded', function() {
+            var modalElement = document.getElementById('dataModal');
+            if (modalElement) {
+                // Listen for Bootstrap modal hidden event
+                modalElement.addEventListener('hidden.bs.modal', function() {
+                    console.log('Bootstrap modal hidden event triggered');
+                    cleanupModal();
+                });
+                
+                // Listen for modal close via backdrop click
+                modalElement.addEventListener('click', function(event) {
+                    if (event.target === modalElement) {
+                        console.log('Modal backdrop clicked');
+                        cleanupModal();
+                    }
+                });
+            }
+            
+            // Also add a global click handler to clean up any orphaned backdrops
+            document.addEventListener('click', function(event) {
+                // If clicking outside modal and there are backdrops, clean them up
+                if (!event.target.closest('#dataModal') && document.querySelectorAll('.modal-backdrop').length > 0) {
+                    console.log('Click outside modal detected, cleaning up backdrops');
+                    cleanupModal();
+                }
+            });
+            
+            // Add periodic check for modal state issues (every 2 seconds)
+            setInterval(function() {
+                checkAndFixModalState();
+            }, 2000);
+        });
+    </script>
+</body>
+</html> 

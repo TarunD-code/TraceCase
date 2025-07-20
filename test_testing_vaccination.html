@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing & Vaccination Chart Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Testing & Vaccination Chart - Fix Verification</h2>
+        
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Testing & Vaccination Rates</h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button class="btn btn-outline-primary" onclick="selectAllCountries('testingVaccination')">
+                        <i class="fas fa-check-double me-1"></i>Select All
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="deselectAllCountries('testingVaccination')">
+                        <i class="fas fa-times me-1"></i>Deselect All
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Customize Countries:</label>
+                    <div id="testingVaccinationCountryCheckboxes" class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Country checkboxes will be populated dynamically -->
+                    </div>
+                    <small class="form-text text-muted">Select countries to display in the chart</small>
+                </div>
+                <div class="chart-container">
+                    <canvas id="testingVaccinationChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <button class="btn btn-primary" onclick="testDeselect()">Test Deselect All</button>
+            <button class="btn btn-success" onclick="testSelect()">Test Select All</button>
+            <button class="btn btn-info" onclick="testCustomization()">Test Customization</button>
+        </div>
+    </div>
+
+    <!-- Modal for detailed data -->
+    <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Detailed Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-end mb-3">
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="exportToCSV()">Export CSV</button>
+                        <button class="btn btn-sm btn-outline-success" onclick="exportToExcel()">Export Excel</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead id="tableHeader">
+                                <!-- Headers will be populated dynamically -->
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Data will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mock data for testing
+        window.allCountryData = {
+            allCountryLabels: ['USA', 'China', 'India', 'Brazil', 'UK', 'France', 'Germany', 'Italy', 'Spain', 'Canada'],
+            allCountryTotalCases: [1000000, 800000, 600000, 500000, 400000, 300000, 250000, 200000, 150000, 100000],
+            allCountryTotalDeaths: [50000, 40000, 30000, 25000, 20000, 15000, 12500, 10000, 7500, 5000],
+            allCountryTotalRecoveries: [800000, 640000, 480000, 400000, 320000, 240000, 200000, 160000, 120000, 80000],
+            allCountryTotalTests: [5000000, 4000000, 3000000, 2500000, 2000000, 1500000, 1250000, 1000000, 750000, 500000],
+            allCountryTotalVaccinations: [3000000, 2400000, 1800000, 1500000, 1200000, 900000, 750000, 600000, 450000, 300000]
+        };
+
+        // Test functions
+        function testDeselect() {
+            console.log('Testing deselect all...');
+            deselectAllCountries('testingVaccination');
+        }
+
+        function testSelect() {
+            console.log('Testing select all...');
+            selectAllCountries('testingVaccination');
+        }
+
+        function testCustomization() {
+            console.log('Testing customization...');
+            var checkboxes = document.getElementById('testingVaccinationCountryCheckboxes');
+            if (checkboxes) {
+                var checkedBoxes = checkboxes.querySelectorAll('input[type="checkbox"]:checked');
+                console.log('Selected countries:', Array.from(checkedBoxes).map(checkbox => checkbox.value));
+            }
+        }
+
+        // Initialize the chart
+        document.addEventListener('DOMContentLoaded', function() {
+            populateCountryCheckboxes('testingVaccination', window.allCountryData.allCountryLabels);
+            renderTestingVaccinationChart(window.allCountryData);
+        });
+
+        // Include the functions from dashboard.js
+        function selectAllCountries(chartId) {
+            console.log('=== SELECT ALL COUNTRIES CALLED ===');
+            console.log('Chart ID:', chartId);
+            
+            var checkboxContainer = document.getElementById(chartId + 'CountryCheckboxes');
+            console.log('Checkbox container found:', !!checkboxContainer);
+            
+            if (checkboxContainer) {
+                var checkboxes = checkboxContainer.querySelectorAll('input[type="checkbox"]');
+                console.log('Total checkboxes found:', checkboxes.length);
+                
+                checkboxes.forEach((checkbox, index) => {
+                    console.log('Checking checkbox', index, ':', checkbox.value, 'was checked:', checkbox.checked);
+                    checkbox.checked = true;
+                });
+                
+                console.log('All countries selected for', chartId);
+                
+                if (window.allCountryData) {
+                    console.log('Triggering chart update for', chartId);
+                    renderTestingVaccinationChart(window.allCountryData);
+                }
+            }
+        }
+
+        function deselectAllCountries(chartId) {
+            console.log('=== DESELECT ALL COUNTRIES CALLED ===');
+            console.log('Chart ID:', chartId);
+            
+            var checkboxContainer = document.getElementById(chartId + 'CountryCheckboxes');
+            console.log('Checkbox container found:', !!checkboxContainer);
+            
+            if (checkboxContainer) {
+                var checkboxes = checkboxContainer.querySelectorAll('input[type="checkbox"]');
+                console.log('Total checkboxes found:', checkboxes.length);
+                
+                var checkedBefore = checkboxContainer.querySelectorAll('input[type="checkbox"]:checked');
+                console.log('Checked checkboxes before:', checkedBefore.length);
+                
+                checkboxes.forEach((checkbox, index) => {
+                    console.log('Unchecking checkbox', index, ':', checkbox.value, 'was checked:', checkbox.checked);
+                    checkbox.checked = false;
+                });
+                
+                var checkedAfter = checkboxContainer.querySelectorAll('input[type="checkbox"]:checked');
+                console.log('Checked checkboxes after:', checkedAfter.length);
+                console.log('All countries deselected for', chartId);
+                
+                if (window.allCountryData) {
+                    console.log('Triggering chart update for', chartId);
+                    renderTestingVaccinationChart(window.allCountryData);
+                }
+            }
+        }
+
+        function populateCountryCheckboxes(chartId, countries) {
+            console.log('Populating country checkboxes for chart:', chartId, 'with countries:', countries);
+            var checkboxContainer = document.getElementById(chartId + 'CountryCheckboxes');
+            if (!checkboxContainer) {
+                console.warn('Checkbox container not found for chart:', chartId);
+                return;
+            }
+            
+            checkboxContainer.innerHTML = '';
+            
+            if (countries && countries.length > 0) {
+                countries.forEach(country => {
+                    var div = document.createElement('div');
+                    div.className = 'form-check';
+                    
+                    var checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'form-check-input';
+                    checkbox.id = chartId + '_' + country.replace(/\s+/g, '_');
+                    checkbox.value = country;
+                    checkbox.checked = true;
+                    
+                    var label = document.createElement('label');
+                    label.className = 'form-check-label';
+                    label.htmlFor = checkbox.id;
+                    label.textContent = country;
+                    
+                    div.appendChild(checkbox);
+                    div.appendChild(label);
+                    checkboxContainer.appendChild(div);
+                    
+                    checkbox.addEventListener('change', function() {
+                        console.log('=== CHECKBOX CHANGE EVENT ===');
+                        console.log('Chart ID:', chartId);
+                        console.log('Country:', country);
+                        console.log('Checked:', this.checked);
+                        
+                        if (window.allCountryData) {
+                            console.log('Triggering chart update for', chartId);
+                            renderTestingVaccinationChart(window.allCountryData);
+                        }
+                    });
+                });
+                
+                console.log('Populated', countries.length, 'country checkboxes for', chartId);
+            }
+        }
+
+        function renderTestingVaccinationChart(data) {
+            console.log('Rendering testing & vaccination chart with data:', data);
+            
+            var ctx = document.getElementById('testingVaccinationChart').getContext('2d');
+            if (window.testingVaccinationChart && typeof window.testingVaccinationChart.destroy === 'function') {
+                window.testingVaccinationChart.destroy();
+            }
+            
+            var selectedCountries = [];
+            var checkboxContainer = document.getElementById('testingVaccinationCountryCheckboxes');
+            if (checkboxContainer) {
+                var checkedBoxes = checkboxContainer.querySelectorAll('input[type="checkbox"]:checked');
+                selectedCountries = Array.from(checkedBoxes).map(checkbox => checkbox.value);
+                console.log('Selected countries for testing & vaccination chart:', selectedCountries);
+            }
+            
+            var chartLabels = selectedCountries;
+            var chartCases = [];
+            var chartDeaths = [];
+            var chartRecoveries = [];
+            var chartTests = [];
+            var chartVaccinations = [];
+            
+            if (chartLabels.length === 0) {
+                console.log('No countries selected for testing & vaccination chart, showing empty chart');
+                window.testingVaccinationChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['No Countries Selected'],
+                        datasets: [{
+                            label: 'Test Positivity Rate (%)',
+                            data: [0],
+                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            borderWidth: 2
+                        }, {
+                            label: 'Vaccination Rate (%)',
+                            data: [0],
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+            
+            chartLabels.forEach(country => {
+                var index = (data.allCountryLabels || []).indexOf(country);
+                if (index !== -1) {
+                    chartCases.push((data.allCountryTotalCases || [])[index] || 0);
+                    chartDeaths.push((data.allCountryTotalDeaths || [])[index] || 0);
+                    chartRecoveries.push((data.allCountryTotalRecoveries || [])[index] || 0);
+                    chartTests.push((data.allCountryTotalTests || [])[index] || 0);
+                    chartVaccinations.push((data.allCountryTotalVaccinations || [])[index] || 0);
+                } else {
+                    chartCases.push(0);
+                    chartDeaths.push(0);
+                    chartRecoveries.push(0);
+                    chartTests.push(0);
+                    chartVaccinations.push(0);
+                }
+            });
+            
+            console.log('Using chart labels:', chartLabels);
+            
+            window.testingVaccinationChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Test Positivity Rate (%)',
+                        data: chartLabels.map((country, index) => {
+                            var tests = chartTests[index] || 0;
+                            var cases = chartCases[index] || 0;
+                            return tests > 0 ? (cases / tests * 100) : Math.random() * 20;
+                        }),
+                        backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2
+                    }, {
+                        label: 'Vaccination Rate (%)',
+                        data: chartLabels.map((country, index) => {
+                            var vaccinations = chartVaccinations[index] || 0;
+                            var population = Math.floor(Math.random() * 100000000) + 1000000;
+                            return vaccinations > 0 ? (vaccinations / population * 100) : Math.random() * 100;
+                        }),
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    onClick: function(event, elements) {
+                        if (elements.length > 0) {
+                            var element = elements[0];
+                            var countryIndex = element.index;
+                            var country = chartLabels[countryIndex];
+                            var datasetLabel = element.dataset.label;
+                            
+                            console.log('Testing & Vaccination clicked:', country, datasetLabel);
+                            
+                            const detailedData = [
+                                {
+                                    category: 'Overall',
+                                    type: 'Summary',
+                                    country: country,
+                                    cases: chartCases[countryIndex] || 0,
+                                    deaths: chartDeaths[countryIndex] || 0,
+                                    recoveries: chartRecoveries[countryIndex] || 0,
+                                    active: (chartCases[countryIndex] || 0) - (chartDeaths[countryIndex] || 0) - (chartRecoveries[countryIndex] || 0),
+                                    tests: chartTests[countryIndex] || 0,
+                                    vaccinations: chartVaccinations[countryIndex] || 0,
+                                    hospitalizations: Math.floor((chartCases[countryIndex] || 0) * 0.1),
+                                    icu: Math.floor((chartCases[countryIndex] || 0) * 0.02),
+                                    fatalityRate: (chartCases[countryIndex] || 0) > 0 ? ((chartDeaths[countryIndex] || 0) / (chartCases[countryIndex] || 0) * 100) : 0,
+                                    testPositivityRate: (chartTests[countryIndex] || 0) > 0 ? ((chartCases[countryIndex] || 0) / (chartTests[countryIndex] || 0) * 100) : 0
+                                }
+                            ];
+                            
+                            showDataModal('Testing & Vaccination Details: ' + country + ' - ' + datasetLabel, detailedData, 'detailed');
+                        }
+                    }
+                }
+            });
+        }
+
+        function showDataModal(title, data, type) {
+            console.log('=== SHOW DATA MODAL CALLED ===');
+            console.log('Title:', title);
+            console.log('Data:', data);
+            console.log('Type:', type);
+            
+            const modalTitleElement = document.getElementById('modalTitle');
+            const modalElement = document.getElementById('dataModal');
+            
+            if (!modalTitleElement || !modalElement) {
+                console.error('Modal elements not found');
+                return;
+            }
+            
+            modalTitleElement.textContent = title;
+            populateDataTable(data, type);
+            
+            try {
+                var modal = new bootstrap.Modal(modalElement);
+                modal.show();
+                console.log('Modal shown successfully');
+            } catch (error) {
+                console.error('Error showing modal:', error);
+                modalElement.style.display = 'block';
+                modalElement.classList.add('show');
+            }
+        }
+
+        function populateDataTable(data, type) {
+            console.log('=== POPULATE DATA TABLE CALLED ===');
+            console.log('Data:', data);
+            console.log('Type:', type);
+            
+            var tableHeader = document.getElementById('tableHeader');
+            var tableBody = document.getElementById('tableBody');
+            
+            if (!tableHeader || !tableBody) {
+                console.error('Table elements not found!');
+                return;
+            }
+            
+            tableHeader.innerHTML = '';
+            tableBody.innerHTML = '';
+            
+            if (type === 'detailed' && data.length > 0) {
+                tableHeader.innerHTML = `
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Total Cases</th>
+                    <th>Total Deaths</th>
+                    <th>Total Recoveries</th>
+                    <th>Total Tests</th>
+                    <th>Total Vaccinations</th>
+                    <th>Case Fatality Rate (%)</th>
+                `;
+                
+                data.forEach(function(item) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${item.category}</strong></td>
+                        <td>${item.type}</td>
+                        <td>${item.cases ? item.cases.toLocaleString() : 'N/A'}</td>
+                        <td>${item.deaths ? item.deaths.toLocaleString() : 'N/A'}</td>
+                        <td>${item.recoveries ? item.recoveries.toLocaleString() : 'N/A'}</td>
+                        <td>${item.tests ? item.tests.toLocaleString() : 'N/A'}</td>
+                        <td>${item.vaccinations ? item.vaccinations.toLocaleString() : 'N/A'}</td>
+                        <td>${item.fatalityRate ? item.fatalityRate.toFixed(2) : 'N/A'}%</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function exportToCSV() {
+            console.log('Export to CSV clicked');
+            alert('CSV export functionality would be implemented here');
+        }
+
+        function exportToExcel() {
+            console.log('Export to Excel clicked');
+            alert('Excel export functionality would be implemented here');
+        }
+    </script>
+</body>
+</html> 

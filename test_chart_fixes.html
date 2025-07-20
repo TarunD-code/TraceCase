@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Fixes Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+</head>
+<body class="bg-light">
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Chart Fixes Test</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Test Country Selection</h5>
+                                <p>This tests if the charts properly respect selected countries:</p>
+                                <ul>
+                                    <li><strong>Hospitalization & ICU:</strong> Should only show selected countries</li>
+                                    <li><strong>Detailed Metrics Stacked Bar:</strong> Should only show selected countries</li>
+                                    <li><strong>Case Fatality Rate:</strong> Should only show selected countries</li>
+                                    <li><strong>Gender Distribution:</strong> Should only show selected countries</li>
+                                    <li><strong>Variant Prevalence:</strong> Should only show selected countries</li>
+                                </ul>
+                                
+                                <h5>Test Popup Tables</h5>
+                                <p>This tests if the popup tables are working correctly:</p>
+                                <ul>
+                                    <li><strong>Testing & Vaccination:</strong> Click chart elements to see detailed popup</li>
+                                    <li><strong>Case Fatality Rate:</strong> Click chart elements to see detailed popup</li>
+                                    <li><strong>All Charts:</strong> Should show detailed data in popup tables</li>
+                                </ul>
+                                
+                                <h5>Test Deselect All Buttons</h5>
+                                <p>All charts should have "Deselect All" buttons that work correctly.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Test Buttons</h5>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="testCountrySelection()">
+                                        <i class="fas fa-check-square me-1"></i>Test Country Selection
+                                    </button>
+                                    <button class="btn btn-success" onclick="testPopupTables()">
+                                        <i class="fas fa-table me-1"></i>Test Popup Tables
+                                    </button>
+                                    <button class="btn btn-info" onclick="testDeselectAll()">
+                                        <i class="fas fa-times me-1"></i>Test Deselect All
+                                    </button>
+                                    <button class="btn btn-warning" onclick="testModalCleanup()">
+                                        <i class="fas fa-broom me-1"></i>Test Modal Cleanup
+                                    </button>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <h6>Instructions:</h6>
+                                    <ol>
+                                        <li>Go to the main dashboard at <a href="http://localhost:8091" target="_blank">http://localhost:8091</a></li>
+                                        <li>Select/deselect countries in the chart customization sections</li>
+                                        <li>Verify that only selected countries appear in the charts</li>
+                                        <li>Click on chart elements to test popup tables</li>
+                                        <li>Use "Deselect All" buttons to clear selections</li>
+                                        <li>Test that dashboard interaction works after closing popups</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function testCountrySelection() {
+            alert('Country Selection Test:\n\n1. Go to the main dashboard\n2. Select only 2-3 countries in each chart\n3. Verify that only those countries appear in the charts\n4. Deselect all countries and verify empty charts appear');
+        }
+        
+        function testPopupTables() {
+            alert('Popup Tables Test:\n\n1. Go to the main dashboard\n2. Click on any chart element (bar, line, pie slice)\n3. Verify that a detailed popup table appears\n4. Check that the table shows relevant data\n5. Close the popup and verify dashboard interaction still works');
+        }
+        
+        function testDeselectAll() {
+            alert('Deselect All Test:\n\n1. Go to the main dashboard\n2. Select some countries in the charts\n3. Click "Deselect All" buttons\n4. Verify that all checkboxes are unchecked\n5. Verify that charts show "No Countries Selected" message');
+        }
+        
+        function testModalCleanup() {
+            alert('Modal Cleanup Test:\n\n1. Go to the main dashboard\n2. Open a popup table\n3. Close the popup\n4. Verify that you can still interact with the dashboard\n5. If interaction is blocked, use the "Fix Modal State" button');
+        }
+    </script>
+</body>
+</html> 
